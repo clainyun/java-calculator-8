@@ -44,11 +44,17 @@ public class Application {
         int sum = 0;
         for (String number : numbers) {
             if (!number.trim().isEmpty()) {
-                sum += Integer.parseInt(number.trim());
+                // 숫자 변환 및 음수 체크
+                try {
+                    int num = Integer.parseInt(number.trim());
+                    if (num < 0)
+                        throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
+                    sum += num;
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("숫자가 아닌 값이 포함되어 있습니다.");
+                }
             }
         }
-
         return sum;
     }
-
 }
