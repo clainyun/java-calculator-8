@@ -24,6 +24,46 @@ class ApplicationTest extends NsTest {
         );
     }
 
+    @Test
+    void 기본_구분자_혼합() {
+        assertSimpleTest(() -> {
+            run("1,2:3");
+            assertThat(output().contains("결과 : 6"));
+        });
+    }
+
+    @Test
+    void 빈_문자열_테스트() {
+        assertSimpleTest(() -> {
+            run(" ");
+            assertThat(output().contains("결과 : 0"));
+        });
+    }
+
+    @Test
+    void 숫자가_아닌_값_예외() {
+        assertSimpleTest(() ->
+            assertThatThrownBy(() -> runException("//;\\n1;q2e;3"))
+             .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 잘못된_커스텀_구분자_예외() {
+        assertSimpleTest(() -> 
+            assertThatThrownBy(() -> runException("//;n1;2;3"))
+                .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 음수_입력_예외() {
+        assertSimpleTest(() -> 
+            assertThatThrownBy(() -> runException("-1:2,3"))
+                .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
     @Override
     public void runMain() {
         Application.main(new String[]{});
