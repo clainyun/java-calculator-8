@@ -51,9 +51,6 @@ public class Application {
                 // 숫자 변환 및 음수 체크
                 try {
                     int num = Integer.parseInt(number.trim()); // Integer로 변환
-                    if (num < 0) { // 음수인 경우
-                        throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
-                    }
                     sum += num; // sum 합산
                 } catch (NumberFormatException e) { // 숫자 변환이 안 된 경우
                     throw new IllegalArgumentException("숫자가 아닌 값이 포함되어 있습니다.");
