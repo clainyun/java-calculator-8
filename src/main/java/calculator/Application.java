@@ -14,20 +14,29 @@ public class Application {
 
     public static int calculate(String input) {
         // 빈 문자열 입력 시 0 반환
-        if (input == null || input.isEmpty()) { // NullPointerException 방지
+        if (isNullOrEmpty(input)) { // 입력 검증 분리
             return 0;
         }
 
-        if (input.startsWith("//")) { // 커스텀 구분자 형식이면 ("//"로 시작)
-            return calculateWithCustomSeparator(input);
+        if (isCustomSeparator(input)) { // 구분자 타입 검증 분리
+            return calculateWithCustomSeparator(input); // 커스텀 구분자 계산
         }
 
-        // 기본 구분자(쉼표, 콜론)으로 분리
-        String[] numbers = input.split("[,:]");
-        return sumNumbers(numbers); // 분리된 숫자들의 합 계산
+        // 기본 구분자로 처리
+        return calculateWithBasicSeparator(input);
     }
 
-    // '//'와 '\n' 사이의 커스텀 구분자 추출 후 계산하는 메서드
+    // 입력 검증: null 또는 빈 문자열 체크
+    private static boolean isNullOrEmpty(String input) {
+        return input == null || input.isEmpty();  // NullPointerException 방지
+    }
+
+    // 구분자 타입 검증: 커스텀 구분자 형식이면 ("//"로 시작)
+    private static boolean isCustomSeparator(String input) {
+        return input.startsWith("//");
+    }
+
+    // 파싱 분리: "//구분자\n숫자들" 형식에서 커스텀 구분자로 숫자 분리
     private static int calculateWithCustomSeparator(String input) {
         // 문자열로 입력된 \n (역슬래시 + n)의 위치 찾기
         int idx = input.indexOf("\\n");
@@ -44,22 +53,35 @@ public class Application {
         return sumNumbers(numbers);
     }
 
+    // 파싱 분리: 기본 구분자로 숫자 분리
+    private static int calculateWithBasicSeparator(String input) {
+        // 기본 구분자(쉼표, 콜론)으로 분리
+        String[] numbers = input.split("[,:]");
+        return sumNumbers(numbers); // 분리된 숫자들의 합 계산
+    }
+
+    // 숫자들의 합 게산
     private static int sumNumbers(String[] numbers) {
         int sum = 0;
         for (String number : numbers) { // 숫자 문자열을 순회하며 합계 계산
             if (!number.trim().isEmpty()) { // 공백제거한 숫자 문자열이 존재한다면
-                // 숫자 변환 및 음수 체크
-                try {
-                    int num = Integer.parseInt(number.trim()); // Integer로 변환
-                    if (num < 0) { // 음수인 경우
-                        throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
-                    }
-                    sum += num; // sum 합산
-                } catch (NumberFormatException e) { // 숫자 변환이 안 된 경우
-                    throw new IllegalArgumentException("숫자가 아닌 값이 포함되어 있습니다.");
-                }
+                // 숫자 변환 및 음수 체크 분리
+                sum += parsePositiveInt(number.trim());
             }
         }
         return sum; // 합산 반환
+    }
+
+    // 계산 검증: 문자열을 정수로 변환하고 음수 체크
+    private static int parsePositiveInt(String number) {
+        try {
+            int num = Integer.parseInt(number.trim()); // Integer로 변환
+            if (num < 0) { // 음수인 경우
+                throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
+            }
+            return num;
+        } catch (NumberFormatException e) { // 숫자 변환이 안 된 경우
+            throw new IllegalArgumentException("숫자가 아닌 값이 포함되어 있습니다.");
+        }
     }
 }
